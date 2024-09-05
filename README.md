@@ -1,4 +1,4 @@
-# Ravintolasovellus-Harjoitusty-
+# Ravintolasovellus-Harjoitustyo
 Ravintolasovellus, Harjoitustyö, Tietokannat ja web-ohjelmointi
 
 En ole aikasemmin käyttänyt githubia, joten olen vähän noob tässä hommassa, mutta yritän parhaani.
