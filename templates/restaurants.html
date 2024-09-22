@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ravintolat</title>
+</head>
+<body>
+    <h1>Ravintolalista</h1>
+
+    <ul>
+        {% for restaurant in restaurants %}
+            <li>
+                <strong>{{ restaurant.name }}</strong><br>
+                Kuvaus: {{ restaurant.description }}<br>
+                Aukioloajat: {{ restaurant.opening_hours }}
+            </li>
+            <hr>
+        {% else %}
+            <li>Ei ravintoloita saatavilla.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="/" style="padding: 10px 20px; background-color: green; color: white; text-decoration: none; border-radius: 5px;">Takaisin etusivulle</a>
+</body>
+</html>

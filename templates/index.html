@@ -1,6 +1,13 @@
 {% if session.username %}
 <p>Olet kirjautunut nimellä {{ session.username }}</p>
 <a href="/logout">Kirjaudu ulos</a>
+
+<form action="/restaurants" method="GET">
+    <button type="submit" style="padding: 10px 20px; background-color: blue; color: white; border: none; cursor: pointer;">
+        Näytä ravintolat
+    </button>
+</form>
+
 {% else %}
 <form action="/login" method="POST">
 <p>Tunnus:<br>
