@@ -3,7 +3,8 @@ READ ME
 Sovellukseski valitsin esimerkki aiheista Ravintolasovelluksen:
 
 Lopullisen sovelluksen toiminnot
-	-Sovelluksessa näkyy tietyn alueen ravintolat, joista voi etsiä tietoa ja lukea arvioita. Jokainen käyttäjä on peruskäyttäjä tai ylläpitäjä.
+	
+ 	-Sovelluksessa näkyy tietyn alueen ravintolat, joista voi etsiä tietoa ja lukea arvioita. Jokainen käyttäjä on peruskäyttäjä tai ylläpitäjä.
 
 	-Käyttäjä voi kirjautua sisään ja ulos sekä luoda uuden tunnuksen.
 	
@@ -27,7 +28,8 @@ Lopullisen sovelluksen toiminnot
 sairastuin aika pahasti tällä viikolla joten sovellus on hyvin yksinkertainen tällä hetkellä.
 
 tämän hetken toiminnot:
-	-sivusto johon voi kirjautua
+	
+ 	-sivusto johon voi kirjautua
 
 	-näytä ravintolat nappi, josta aukeaa lista ravintoloista (nimi, kuvailu, aukioloajat)
 	
