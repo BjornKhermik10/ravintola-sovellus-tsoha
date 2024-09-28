@@ -1,3 +1,6 @@
+CREATE TABLE Restaurant( id SERIAL PRIMARY KEY, name VARCHAR(100) NOT NULL, description TEXT, opening_hours VARCHAR(50));
+
+
 INSERT INTO Restaurant (name, description, opening_hours)
 VALUES 
 ('Pizza Palace', 'A cozy place for all your pizza cravings.', 'Mon-Sun: 11am - 10pm'),
