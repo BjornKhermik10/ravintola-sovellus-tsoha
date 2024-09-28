@@ -1,19 +1,43 @@
-{% if session.username %}
-<p>Olet kirjautunut nimellä {{ session.username }}</p>
-<a href="/logout">Kirjaudu ulos</a>
-
-<form action="/restaurants" method="GET">
-    <button type="submit" style="padding: 10px 20px; background-color: blue; color: white; border: none; cursor: pointer;">
-        Näytä ravintolat
-    </button>
-</form>
-
-{% else %}
-<form action="/login" method="POST">
-<p>Tunnus:<br>
-<input type="text" name="username"></p>
-<p>Salasana:<br>
-<input type="password" name="password"></p>
-<input type="submit" value="Kirjaudu">
-</form>
-{% endif %}
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 30px;
+        }
+        .button {
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #5e5e5e;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            width: 200px;
+        }
+        .button:hover {
+            background-color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tervetuloa Ravintola-Sovellukseen!</h1>
+    <a href="{{ url_for('register') }}" class="button">Rekisteröidy</a>
+    <a href="{{ url_for('login') }}" class="button">Kirjaudu sisään</a>
+</body>
+</html>

@@ -9,18 +9,20 @@
     <h1>Ravintolalista</h1>
 
     <ul>
-        {% for restaurant in restaurants %}
-            <li>
-                <strong>{{ restaurant.name }}</strong><br>
-                Kuvaus: {{ restaurant.description }}<br>
-                Aukioloajat: {{ restaurant.opening_hours }}
-            </li>
-            <hr>
+        {% if restaurants %}
+            {% for restaurant in restaurants %}
+                <li>
+                    <strong>{{ restaurant.name }}</strong><br>
+                    Kuvaus: {{ restaurant.description }}<br>
+                    Aukioloajat: {{ restaurant.opening_hours }}
+                </li>
+                <hr>
+            {% endfor %}
         {% else %}
             <li>Ei ravintoloita saatavilla.</li>
-        {% endfor %}
+        {% endif %}
     </ul>
 
-    <a href="/" style="padding: 10px 20px; background-color: green; color: white; text-decoration: none; border-radius: 5px;">Takaisin etusivulle</a>
+    <a href="/" style="padding: 10px 20px; background-color: rgb(221, 107, 0); color: white; text-decoration: none; border-radius: 5px;">Takaisin etusivulle</a>
 </body>
 </html>
