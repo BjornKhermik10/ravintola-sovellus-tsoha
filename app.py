@@ -68,7 +68,7 @@ def login():
                 if is_admin():
                     return redirect(url_for("web_dev_page"))
                 else:
-                    return redirect(url_for("customer_page"))
+                    return redirect(url_for("restaurants"))
             else:
                 "Invalid password"
             
@@ -83,7 +83,6 @@ def is_admin():
     user_admin = result.fetchone()
     return user_admin is not None and user_admin[0] is True
 
-
 @app.route("/restaurants")
 def restaurants():
     sql_query = "SELECT name, description, opening_hours FROM restaurants"
@@ -91,14 +90,44 @@ def restaurants():
     restaurants = result.fetchall()
     return render_template("restaurants.html", restaurants=restaurants)
 
-@app.route("/customer_page")
-def customer_page():
-    return render_template("customer_page.html")
-
-
 @app.route("/web_dev_page")
 def web_dev_page():
     if is_admin():
         return render_template("web_dev_page.html")
     else:
         return "Ei tänne päin!" 
+
+@app.route("/add_review")
+def add_review():
+    sql_query = "SELECT restaurant_id, name FROM restaurants"
+    result = db.session.execute(text(sql_query))
+    restaurants = result.fetchall()
+    
+    return render_template("add_review.html", restaurants=restaurants)
+
+
+@app.route("/submit_review", methods=["POST"])
+def submit_review():
+    if "username" in session:
+        username = session["username"]
+
+        sql_account_id = "SELECT account_id FROM accounts WHERE username=:username"
+        result = db.session.execute(text(sql_account_id), {"username": username})
+        account = result.fetchone()
+        
+        if account:
+            account_id = account.account_id
+            rating = request.form["rating"]
+            # jos ei halua jättää text commenttia niin "-" menee review sql tableen
+            comment = request.form["comment"] or "-"
+            restaurant_id = request.form["restaurant_id"]
+
+            sql_insert = """INSERT INTO review (account_id, restaurant_id, rating, comment) VALUES (:account_id, :restaurant_id, :rating, :comment)"""
+            db.session.execute(text(sql_insert), {
+                "account_id": account_id,
+                "restaurant_id": restaurant_id,
+                "rating": rating,
+                "comment": comment
+            })
+            db.session.commit()
+            return redirect(url_for("restaurants"))
