@@ -9,7 +9,7 @@
     <h1>Ravintolalista</h1>
     <h2>Tervetuloa, asiakas!</h2>
     
-    <a href="{{ url_for('add_review') }}" style="padding: 10px 20px; background-color: orange; color: white; text-decoration: none; border-radius: 5px; display: block; margin-bottom: 20px;">Lisää Arvostelu</a>
+    <a href="{{ url_for('add_review') }}" style="padding: 5px 10px; background-color: orange; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-bottom: 20px;">Lisää Arvostelu</a>
     
     <ul>
         {% if restaurants %}
@@ -17,7 +17,8 @@
                 <li>
                     <strong>{{ restaurant.name }}</strong><br>
                     Kuvaus: {{ restaurant.description }}<br>
-                    Aukiolojat: {{ restaurant.opening_hours }}<br>
+                    Aukioloajat: {{ restaurant.opening_hours }}<br>
+                    ⭐ {{ '%.1f' | format(restaurant.average_rating) }}:<br>
                     <a href="{{ url_for('reviews', restaurant_id=restaurant.restaurant_id) }}" style="color: blue; text-decoration: underline;">Lue arvosteluita</a>
                 </li>
                 <hr>
@@ -27,6 +28,6 @@
         {% endif %}
     </ul>    
 
-    <a href="/" style="padding: 10px 20px; background-color: orange; color: white; text-decoration: none; border-radius: 5px;">Takaisin etusivulle</a>
+    <a href="/" style="padding: 10px 20px; background-color: rgb(255, 85, 85); color: white; text-decoration: none; border-radius: 5px;">Takaisin etusivulle</a>
 </body>
 </html>

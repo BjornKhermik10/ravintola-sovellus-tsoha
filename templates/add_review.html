@@ -25,10 +25,24 @@
             width: 600px;
         }
 
+        label {
+            display: block;
+            margin: 15px 0 5px;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            height: 40px;
+        }
+
         .rating {
             display: flex;
             justify-content: center;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .rating label {
@@ -37,21 +51,30 @@
 
         textarea {
             width: 100%;
-            height: 100px;
+            height: 120px;
             padding: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 20px;
             border: 1px solid #ccc;
             border-radius: 4px;
+            resize: none; /* Prevents resizing */
+            box-sizing: border-box; /* Ensures padding and border are included in width */
         }
 
         .button {
             padding: 10px 20px;
-            background-color: orange;
             color: white;
             text-decoration: none;
             border-radius: 5px;
             display: inline-block;
-            margin: 5px 0;
+            margin: 10px 0;
+        }
+
+        .button.submit {
+            background-color: orange;
+        }
+
+        .button.back {
+            background-color: rgb(255, 85, 85);
         }
     </style>
 </head>
@@ -68,7 +91,7 @@
                 {% endfor %}
             </select>
 
-            <label>Valitse arvio (1-5 tähteä):</label>
+            <label>Valitse tähtien määrä 1-5:</label>
             <div class="rating">
                 <label><input type="radio" name="rating" value="1" required> 1</label>
                 <label><input type="radio" name="rating" value="2"> 2</label>
@@ -77,13 +100,13 @@
                 <label><input type="radio" name="rating" value="5"> 5</label>
             </div>
 
-            <p>Tämä arvio on kirjoittanut: <strong>{{ session.username }}</strong></p>
+            <p>Tämän arvion on kirjoittanut: <strong>{{ session.username }}</strong></p>
 
             <label for="comment">Lisää kommentti tähän:</label>
             <textarea id="comment" name="comment" placeholder="Kirjoita arvostelu..." required></textarea>
 
-            <button type="submit" class="button">Lähetä</button>
-            <a href="{{ url_for('restaurants') }}" class="button">Takaisin ravintoloihin</a>
+            <button type="submit" class="button submit">Lähetä</button>
+            <a href="{{ url_for('restaurants') }}" class="button back">Takaisin ravintoloihin</a>
         </form>
     </div>
 </body>

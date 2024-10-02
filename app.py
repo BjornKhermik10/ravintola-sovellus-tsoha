@@ -85,10 +85,16 @@ def is_admin():
 
 @app.route("/restaurants")
 def restaurants():
-    sql_query = "SELECT restaurant_id, name, description, opening_hours FROM restaurants"
+    #tässä meni aivan liian kauan
+    sql_query = """SELECT r.restaurant_id, r.name, r.description, r.opening_hours, COALESCE(AVG(rv.rating), 0) 
+                AS average_rating FROM restaurants r
+                LEFT JOIN review rv ON r.restaurant_id = rv.restaurant_id
+                GROUP BY r.restaurant_id
+                ORDER BY average_rating DESC"""
     result = db.session.execute(text(sql_query))
     restaurants = result.fetchall()
     return render_template("restaurants.html", restaurants=restaurants)
+
 
 
 @app.route("/web_dev_page")
