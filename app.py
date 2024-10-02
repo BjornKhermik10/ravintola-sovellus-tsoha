@@ -85,10 +85,11 @@ def is_admin():
 
 @app.route("/restaurants")
 def restaurants():
-    sql_query = "SELECT name, description, opening_hours FROM restaurants"
+    sql_query = "SELECT restaurant_id, name, description, opening_hours FROM restaurants"
     result = db.session.execute(text(sql_query))
     restaurants = result.fetchall()
     return render_template("restaurants.html", restaurants=restaurants)
+
 
 @app.route("/web_dev_page")
 def web_dev_page():
@@ -131,3 +132,15 @@ def submit_review():
             })
             db.session.commit()
             return redirect(url_for("restaurants"))
+
+@app.route("/reviews/<int:restaurant_id>")
+def reviews(restaurant_id):
+    sql_query = """SELECT r.rating, r.comment, a.username FROM review r JOIN accounts a ON r.account_id = a.account_id WHERE r.restaurant_id = :restaurant_id"""
+    result = db.session.execute(text(sql_query), {"restaurant_id": restaurant_id})
+    reviews = result.fetchall()
+
+    sql_restaurant = "SELECT name FROM restaurants WHERE restaurant_id = :restaurant_id"
+    restaurant_result = db.session.execute(text(sql_restaurant), {"restaurant_id": restaurant_id})
+    restaurant = restaurant_result.fetchone()
+
+    return render_template("reviews.html", reviews=reviews, restaurant=restaurant)

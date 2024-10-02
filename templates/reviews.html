@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arvostelut - {{ restaurant.name }}</title>
+    <style>
+        .star {
+            color: gold;
+        }
+        .empty-star {
+            color: lightgray;
+        }
+    </style>
+</head>
+<body>
+    <h1>Arvostelut - {{ restaurant.name }}</h1>
+    
+    <ul>
+        {% if reviews %}
+            {% for review in reviews %}
+                <li>
+                    <strong>{{ review.username }}:</strong> 
+                    <span>
+                        {% for i in range(1, 6) %}
+                            {% if i <= review.rating %}
+                                <span class="star">★</span>
+                            {% else %}
+                                <span class="empty-star">☆</span>
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                    - {{ review.comment }}
+                </li>
+            {% endfor %}
+        {% else %}
+            <li>Ei arvosteluja saatavilla.</li>
+        {% endif %}
+    </ul>
+
+    <a href="{{ url_for('restaurants') }}" style="padding: 10px 20px; background-color: orange; color: white; text-decoration: none; border-radius: 5px;">Takaisin ravintoloihin</a>
+</body>
+</html>

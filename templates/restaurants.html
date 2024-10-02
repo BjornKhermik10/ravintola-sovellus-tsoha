@@ -17,14 +17,15 @@
                 <li>
                     <strong>{{ restaurant.name }}</strong><br>
                     Kuvaus: {{ restaurant.description }}<br>
-                    Aukioloajat: {{ restaurant.opening_hours }}
+                    Aukiolojat: {{ restaurant.opening_hours }}<br>
+                    <a href="{{ url_for('reviews', restaurant_id=restaurant.restaurant_id) }}" style="color: blue; text-decoration: underline;">Lue arvosteluita</a>
                 </li>
                 <hr>
             {% endfor %}
         {% else %}
             <li>Ei ravintoloita saatavilla.</li>
         {% endif %}
-    </ul>
+    </ul>    
 
     <a href="/" style="padding: 10px 20px; background-color: orange; color: white; text-decoration: none; border-radius: 5px;">Takaisin etusivulle</a>
 </body>
