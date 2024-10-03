@@ -83,18 +83,20 @@ def is_admin():
     user_admin = result.fetchone()
     return user_admin is not None and user_admin[0] is True
 
-@app.route("/restaurants")
+@app.route("/restaurants", methods=["GET"])
 def restaurants():
-    #tässä meni aivan liian kauan
+    #stackoverflow testing
+    search_sql_query = request.args.get("search", "")
     sql_query = """SELECT r.restaurant_id, r.name, r.description, r.opening_hours, COALESCE(AVG(rv.rating), 0) 
                 AS average_rating FROM restaurants r
                 LEFT JOIN review rv ON r.restaurant_id = rv.restaurant_id
+                WHERE r.name ILIKE :search_sql_query
                 GROUP BY r.restaurant_id
                 ORDER BY average_rating DESC"""
-    result = db.session.execute(text(sql_query))
+
+    result = db.session.execute(text(sql_query), {"search_sql_query": f"%{search_sql_query}%"})
     restaurants = result.fetchall()
     return render_template("restaurants.html", restaurants=restaurants)
-
 
 
 @app.route("/web_dev_page")
@@ -141,6 +143,7 @@ def submit_review():
 
 @app.route("/reviews/<int:restaurant_id>")
 def reviews(restaurant_id):
+    #testing functionality
     sql_query = """SELECT r.rating, r.comment, a.username FROM review r JOIN accounts a ON r.account_id = a.account_id WHERE r.restaurant_id = :restaurant_id"""
     result = db.session.execute(text(sql_query), {"restaurant_id": restaurant_id})
     reviews = result.fetchall()

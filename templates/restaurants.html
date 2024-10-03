@@ -7,7 +7,13 @@
 </head>
 <body>
     <h1>Ravintolalista</h1>
-    <h2>Tervetuloa, asiakas!</h2>
+    <h2>Tervetuloa, {{ session.get('username', 'asiakas') }}!</h2>
+
+    <form action="{{ url_for('restaurants') }}" method="GET" style="margin-bottom: 20px;">
+        <input type="text" name="search" placeholder="Etsi ravintolaa" required style="padding: 10px; border-radius: 5px; border: 1px solid lightgray; width: 250px; margin-right: 10px;">
+        <button type="submit" style="padding: 10px 15px; background-color: lightgray; color: black; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">Hae</button>
+        <a href="{{ url_for('restaurants') }}" style="padding: 10px 15px; background-color: lightgray; color: black; text-decoration: none; border-radius: 5px; margin-left: 10px; display: inline-block; font-size: 16px;">Kaikki ravintolat</a>
+    </form>
     
     <a href="{{ url_for('add_review') }}" style="padding: 5px 10px; background-color: orange; color: white; text-decoration: none; border-radius: 5px; display: inline-block; margin-bottom: 20px;">Lisää Arvostelu</a>
     
@@ -28,6 +34,6 @@
         {% endif %}
     </ul>    
 
-    <a href="/" style="padding: 10px 20px; background-color: rgb(255, 85, 85); color: white; text-decoration: none; border-radius: 5px;">Takaisin etusivulle</a>
+    <a href="/" style="padding: 10px 20px; background-color: rgb(255, 85, 85); color: white; text-decoration: none; border-radius: 5px;">Kirjaudu Ulos</a>
 </body>
 </html>

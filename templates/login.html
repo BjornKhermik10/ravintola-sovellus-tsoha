@@ -4,17 +4,63 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kirjautuminen</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="text"],
+        input[type="password"] {
+            padding: 10px;
+            margin-bottom: 20px;
+            width: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button, .button {
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: lightgray;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            width: 200px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        button:hover, .button:hover {
+            background-color: #000000;
+        }
+    </style>
 </head>
 <body>
     <h1>Kirjaudu sisään</h1>
     <form method="POST">
         <label for="username">Käyttäjänimi:</label>
         <input type="text" name="username" required>
-        <br>
+        
         <label for="password">Salasana:</label>
         <input type="password" name="password" required>
-        <br>
-        <button type="submit">Kirjaudu</button>
+        
+        <div style="margin-top: 20px;">
+            <button type="submit">Kirjaudu</button>
+            <a href="{{ url_for('index') }}" class="button">Takaisin etusivulle</a>
+        </div>
     </form>
 </body>
 </html>
