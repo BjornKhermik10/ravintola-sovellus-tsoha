@@ -69,7 +69,7 @@ source venv/bin/activate
 
 Asenna riippuvuudet komennolla
 
-pip install -r requirements.txt
+pip install -r requirements
 
 Käynnistä sovellus
 
