@@ -5,13 +5,6 @@ CREATE TABLE accounts (
     admin bool DEFAULT FALSE
 );
 
-
-CREATE TABLE web_dev_accounts (
-    web_dev_id INT PRIMARY KEY,
-    username TEXT UNIQUE,
-    FOREIGN KEY (web_dev_id) REFERENCES accounts(account_id)
-);
-
 INSERT INTO accounts (username, password, admin)
 VALUES 
 ('john_doe', 'password123', False),
@@ -68,3 +61,39 @@ VALUES
 (1, 1, 4, 'Pizza Palace is a cozy spot, perfect for families and delicious pizza.'),
 (2, 2, 5, 'Sushi World has the freshest fish and great service, loved it!'),
 (3, 3, 4, 'Burger Haven is solid, but could use more variety in the menu options.');
+
+CREATE TABLE groups (
+    group_id SERIAL PRIMARY KEY,
+    group_name VARCHAR(255) NOT NULL UNIQUE,
+    color_id INT CHECK (color_id BETWEEN 1 AND 5)
+);
+
+INSERT INTO groups (group_name, color_id)
+VALUES 
+('Italian Food', 1),
+('Sushi', 2),
+('Burgers', 4),
+('Vegan', 3);
+
+
+CREATE TABLE group_restaurants (
+    group_id INT,
+    restaurant_id INT,
+    PRIMARY KEY (group_id, restaurant_id),
+    FOREIGN KEY (group_id) REFERENCES groups(group_id) ON DELETE CASCADE,
+    FOREIGN KEY (restaurant_id) REFERENCES restaurants(restaurant_id) ON DELETE CASCADE
+);
+
+INSERT INTO group_restaurants (group_id, restaurant_id)
+VALUES 
+(1, 1),
+(1, 5),
+(1, 8),
+(2, 2),
+(2, 4),
+(2, 7),
+(3, 3),
+(3, 6),
+(3, 9), 
+(4, 12),
+(4, 10);

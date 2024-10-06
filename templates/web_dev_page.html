@@ -3,13 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Dev Page</title>
+    <title>Ravintolat (Ylläpitäjä)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid lightgray;
+            width: 250px;
+            margin-right: 10px;
+        }
+        button, a {
+            padding: 10px 15px;
+            background-color: lightgray;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .remove-button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .edit-button {
+            background-color: gray;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: white;
+            margin: 5px 0;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        hr {
+            margin: 10px 0;
+        }
+        .badge-placeholder {
+            height: 25px; /* Adjust height as necessary */
+        }
+    </style>
 </head>
 <body>
-    <h1>Tervetuloa kehittäjä!</h1>
-    <p>Tämä on web kehittäjien sivu.</p>
-    <a href="{{ url_for('index') }}">Takaisin etusivulle</a>
-    <br>
-    <a href="{{ url_for('restaurants') }}" class="btn">Näytä ravintolat</a>
+    <h1>Ravintolalista</h1>
+    <h2>Tervetuloa, {{ session.get('username', 'Ylläpitäjä') }}!</h2>
+
+    <form action="{{ url_for('web_dev_page') }}" method="GET">
+        <input type="text" name="search" placeholder="Etsi ravintolaa" required>
+        <button type="submit">Hae</button>
+        <a href="{{ url_for('web_dev_page') }}">Kaikki ravintolat</a>
+    </form>
+    
+    <a href="{{ url_for('web_dev_add_review') }}" style="background-color: orange; color: white;">Lisää Arvostelu (Ylläpitäjä)</a>
+    
+    <ul>
+        {% if restaurants %}
+            {% for restaurant in restaurants %}
+                <li data-id="{{ restaurant.restaurant_id }}">
+                    <strong>{{ restaurant.name }}</strong> 
+                    <div>
+                        {% if restaurant.groups %}
+                            {% for group in restaurant.groups %}
+                                <span class="badge" style="background-color: {{ COLOR_MAP[group.color_id] }}">{{ group.group_name }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="badge-placeholder"></span>
+                        {% endif %}
+                    </div>
+                    <br>
+                    Kuvaus: {{ restaurant.description }}<br>
+                    Aukioloajat: {{ restaurant.opening_hours }}<br>
+                    ⭐ {{ '%.1f' | format(restaurant.average_rating) }}:<br>
+                    <a href="{{ url_for('web_dev_review', restaurant_id=restaurant.restaurant_id) }}" style="color: blue; text-decoration: underline;">Lue arvosteluita</a>
+                    <a href="{{ url_for('web_dev_edit_ravintola', restaurant_id=restaurant.restaurant_id) }}" class="edit-button">Muokkaa</a>
+                    <form action="{{ url_for('remove_restaurant', restaurant_id=restaurant.restaurant_id) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="remove-button">Poista</button>
+                    </form>
+                </li>
+                <hr>
+            {% endfor %}
+        {% else %}
+            <li>Ei ravintoloita saatavilla.</li>
+        {% endif %}
+    </ul>
+
+    <a href="/" style="background-color: rgb(255, 85, 85); color: white;">Kirjaudu Ulos</a>
 </body>
 </html>

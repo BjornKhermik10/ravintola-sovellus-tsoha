@@ -15,6 +15,13 @@ app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 db = SQLAlchemy(app)
 app.config['DEBUG'] = True
 
+COLOR_MAP = {
+    1: "#FA6F6F",  # Red
+    2: "#5CAEFA",  # Blue
+    3: "#006D05",  # Green
+    4: "#CA66F8",  # Purple
+    5: "#808080",  # Grey
+}
 
 @app.route("/")
 def index():
@@ -85,26 +92,228 @@ def is_admin():
 
 @app.route("/restaurants", methods=["GET"])
 def restaurants():
-    #stackoverflow testing
     search_sql_query = request.args.get("search", "")
-    sql_query = """SELECT r.restaurant_id, r.name, r.description, r.opening_hours, COALESCE(AVG(rv.rating), 0) 
-                AS average_rating FROM restaurants r
-                LEFT JOIN review rv ON r.restaurant_id = rv.restaurant_id
-                WHERE r.name ILIKE :search_sql_query
-                GROUP BY r.restaurant_id
-                ORDER BY average_rating DESC"""
+    sql_query = """
+        SELECT r.restaurant_id, r.name, r.description, r.opening_hours, 
+               COALESCE(AVG(rv.rating), 0) AS average_rating,
+               g.group_name, g.color_id
+        FROM restaurants r
+        LEFT JOIN review rv ON r.restaurant_id = rv.restaurant_id
+        LEFT JOIN group_restaurants gr ON r.restaurant_id = gr.restaurant_id
+        LEFT JOIN groups g ON gr.group_id = g.group_id
+        WHERE r.name ILIKE :search_sql_query
+        GROUP BY r.restaurant_id, g.group_name, g.color_id
+        ORDER BY average_rating DESC
+    """
 
     result = db.session.execute(text(sql_query), {"search_sql_query": f"%{search_sql_query}%"})
     restaurants = result.fetchall()
-    return render_template("restaurants.html", restaurants=restaurants)
 
+    #testing please work - tämä on groups badgejen toimivuutta varten
+    restaurant_list = []
+    current_restaurant = None
+    for row in restaurants:
+        if current_restaurant is None or current_restaurant['restaurant_id'] != row.restaurant_id:
+            if current_restaurant:
+                restaurant_list.append(current_restaurant)
+            current_restaurant = {
+                'restaurant_id': row.restaurant_id,
+                'name': row.name,
+                'description': row.description,
+                'opening_hours': row.opening_hours,
+                'average_rating': row.average_rating,
+                'groups': []
+            }
+        if row.group_name:
+            current_restaurant['groups'].append({
+                'group_name': row.group_name,
+                'color_id': row.color_id
+            })
+    
+    if current_restaurant:
+        restaurant_list.append(current_restaurant)
 
-@app.route("/web_dev_page")
+    return render_template("restaurants.html", restaurants=restaurant_list, COLOR_MAP=COLOR_MAP)
+
+@app.route("/web_dev_page", methods=["GET"])
 def web_dev_page():
     if is_admin():
-        return render_template("web_dev_page.html")
+        search_sql_query = request.args.get("search", "")
+        sql_query = """
+            SELECT r.restaurant_id, r.name, r.description, r.opening_hours, 
+                COALESCE(AVG(rv.rating), 0) AS average_rating,
+                g.group_name, g.color_id
+            FROM restaurants r
+            LEFT JOIN review rv ON r.restaurant_id = rv.restaurant_id
+            LEFT JOIN group_restaurants gr ON r.restaurant_id = gr.restaurant_id
+            LEFT JOIN groups g ON gr.group_id = g.group_id
+            WHERE r.name ILIKE :search_sql_query
+            GROUP BY r.restaurant_id, g.group_name, g.color_id
+            ORDER BY average_rating DESC
+        """
+
+        result = db.session.execute(text(sql_query), {"search_sql_query": f"%{search_sql_query}%"})
+        restaurants = result.fetchall()
+
+        restaurant_list = []
+        current_restaurant = None
+        for row in restaurants:
+            if current_restaurant is None or current_restaurant['restaurant_id'] != row.restaurant_id:
+                if current_restaurant:
+                    restaurant_list.append(current_restaurant)
+                current_restaurant = {
+                    'restaurant_id': row.restaurant_id,
+                    'name': row.name,
+                    'description': row.description,
+                    'opening_hours': row.opening_hours,
+                    'average_rating': row.average_rating,
+                    'groups': []
+                }
+            if row.group_name:
+                current_restaurant['groups'].append({
+                    'group_name': row.group_name,
+                    'color_id': row.color_id
+                })
+        
+        if current_restaurant:
+            restaurant_list.append(current_restaurant)
+
+        return render_template("web_dev_page.html", restaurants=restaurant_list, COLOR_MAP=COLOR_MAP)
     else:
         return "Ei tänne päin!" 
+
+@app.route("/web_dev_edit_ravintola/<int:restaurant_id>", methods=["GET", "POST"])
+def web_dev_edit_ravintola(restaurant_id):
+    if request.method == "GET":
+        sql_query = "SELECT * FROM restaurants WHERE restaurant_id = :restaurant_id"
+        result = db.session.execute(text(sql_query), {"restaurant_id": restaurant_id})
+        restaurant = result.fetchone()
+
+        if restaurant is None:
+            return "Restaurant not found", 404
+
+        sql_groups = "SELECT group_id, group_name FROM groups"
+        groups_result = db.session.execute(text(sql_groups))
+        groups = groups_result.fetchall()
+
+        sql_assigned_groups = """
+            SELECT g.group_id
+            FROM groups g
+            JOIN group_restaurants gr ON g.group_id = gr.group_id
+            WHERE gr.restaurant_id = :restaurant_id
+        """
+        assigned_result = db.session.execute(text(sql_assigned_groups), {"restaurant_id": restaurant_id})
+        restaurant_groups = [row.group_id for row in assigned_result.fetchall()]
+
+        return render_template("web_dev_edit_ravintola.html", restaurant=restaurant, groups=groups, restaurant_groups=restaurant_groups, restaurant_id=restaurant_id)
+
+    if request.method == "POST":
+        description = request.form["description"]
+        opening_hours = request.form["opening_hours"]
+        selected_groups = request.form.getlist("groups")
+
+        sql_update = """UPDATE restaurants 
+                        SET description = :description, opening_hours = :opening_hours 
+                        WHERE restaurant_id = :restaurant_id"""
+        db.session.execute(text(sql_update), {
+            "description": description,
+            "opening_hours": opening_hours,
+            "restaurant_id": restaurant_id
+        })
+        
+        db.session.execute(text("DELETE FROM group_restaurants WHERE restaurant_id = :restaurant_id"), {"restaurant_id": restaurant_id})
+        
+        for group_id in selected_groups:
+            db.session.execute(text("INSERT INTO group_restaurants (restaurant_id, group_id) VALUES (:restaurant_id, :group_id)"),
+                               {"restaurant_id": restaurant_id, "group_id": group_id})
+
+        db.session.commit()
+        return redirect(url_for("web_dev_page"))
+    
+@app.route("/update_restaurant/<int:restaurant_id>", methods=["POST"])
+def update_restaurant(restaurant_id):
+    description = request.form["description"]
+    opening_hours = request.form["opening_hours"]
+
+    sql_update = """UPDATE restaurants 
+                    SET description = :description, opening_hours = :opening_hours 
+                    WHERE restaurant_id = :restaurant_id"""
+    db.session.execute(text(sql_update), {
+        "description": description,
+        "opening_hours": opening_hours,
+        "restaurant_id": restaurant_id
+    })
+    db.session.commit()
+
+    return redirect(url_for("web_dev_page"))
+
+@app.route("/remove_restaurant/<int:restaurant_id>", methods=["POST"])
+def remove_restaurant(restaurant_id):
+    # testing
+    db.session.execute(text("DELETE FROM review WHERE restaurant_id = :restaurant_id"), {"restaurant_id": restaurant_id})
+    db.session.execute(text("DELETE FROM restaurants WHERE restaurant_id = :restaurant_id"), {"restaurant_id": restaurant_id})
+    db.session.commit()
+    
+    return redirect(url_for("web_dev_page"))
+
+@app.route("/web_dev_add_review")
+def web_dev_add_review():
+    sql_query = "SELECT restaurant_id, name FROM restaurants"
+    result = db.session.execute(text(sql_query))
+    restaurants = result.fetchall()
+    
+    return render_template("web_dev_add_review.html", restaurants=restaurants)
+
+@app.route("/remove_review/<int:review_id>", methods=["POST"])
+def remove_review(review_id):
+    if not is_admin():
+        return "Unauthorized", 403
+
+    restaurant_id = request.form.get("restaurant_id")
+    db.session.execute(text("DELETE FROM review WHERE review_id = :review_id"), {"review_id": review_id})
+    db.session.commit()
+
+    return redirect(url_for("web_dev_review", restaurant_id=restaurant_id))
+
+@app.route("/submit_web_dev_review", methods=["POST"])
+def submit_web_dev_review():
+    if "username" in session:
+        username = session["username"]
+
+        sql_account_id = "SELECT account_id FROM accounts WHERE username=:username"
+        result = db.session.execute(text(sql_account_id), {"username": username})
+        account = result.fetchone()
+        
+        if account:
+            account_id = account.account_id
+            rating = request.form["rating"]
+            comment = request.form["comment"] or "-"
+            restaurant_id = request.form["restaurant_id"]
+
+            sql_insert = """INSERT INTO review (account_id, restaurant_id, rating, comment) 
+                            VALUES (:account_id, :restaurant_id, :rating, :comment)"""
+            db.session.execute(text(sql_insert), {
+                "account_id": account_id,
+                "restaurant_id": restaurant_id,
+                "rating": rating,
+                "comment": comment
+            })
+            db.session.commit()
+            return redirect(url_for("web_dev_review", restaurant_id=restaurant_id))
+
+@app.route("/web_dev_review/<int:restaurant_id>")
+def web_dev_review(restaurant_id):
+    sql_query = """SELECT r.review_id, r.rating, r.comment, a.username 
+                   FROM review r JOIN accounts a ON r.account_id = a.account_id 
+                   WHERE r.restaurant_id = :restaurant_id"""
+    result = db.session.execute(text(sql_query), {"restaurant_id": restaurant_id})
+    reviews = result.fetchall()
+
+    sql_restaurant = "SELECT name FROM restaurants WHERE restaurant_id = :restaurant_id"
+    restaurant_result = db.session.execute(text(sql_restaurant), {"restaurant_id": restaurant_id})
+    restaurant = restaurant_result.fetchone()
+
+    return render_template("web_dev_review.html", reviews=reviews, restaurant=restaurant, restaurant_id=restaurant_id)
 
 @app.route("/add_review")
 def add_review():
@@ -113,7 +322,6 @@ def add_review():
     restaurants = result.fetchall()
     
     return render_template("add_review.html", restaurants=restaurants)
-
 
 @app.route("/submit_review", methods=["POST"])
 def submit_review():
@@ -143,7 +351,7 @@ def submit_review():
 
 @app.route("/reviews/<int:restaurant_id>")
 def reviews(restaurant_id):
-    #testing functionality
+    #testing
     sql_query = """SELECT r.rating, r.comment, a.username FROM review r JOIN accounts a ON r.account_id = a.account_id WHERE r.restaurant_id = :restaurant_id"""
     result = db.session.execute(text(sql_query), {"restaurant_id": restaurant_id})
     reviews = result.fetchall()

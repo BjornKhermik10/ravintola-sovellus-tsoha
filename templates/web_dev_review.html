@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arvostelut - {{ restaurant.name }} (Ylläpitäjä)</title>
+    <style>
+        .star {
+            color: gold;
+        }
+        .empty-star {
+            color: lightgray;
+        }
+    </style>
+</head>
+<body>
+    <h1>Arvostelut - {{ restaurant.name }} (Ylläpitäjä)</h1>
+    
+    <ul>
+        {% if reviews %}
+            {% for review in reviews %}
+                <li>
+                    <strong>{{ review.username }}:</strong> 
+                    <span>
+                        {% for i in range(1, 6) %}
+                            {% if i <= review.rating %}
+                                <span class="star">★</span>
+                            {% else %}
+                                <span class="empty-star">☆</span>
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                    - {{ review.comment }}
+                    <form action="{{ url_for('remove_review', review_id=review.review_id) }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="restaurant_id" value="{{ restaurant_id }}">
+                        <button type="submit" style="background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Poista</button>
+                    </form>
+                </li>
+            {% endfor %}
+        {% else %}
+            <li>Ei arvosteluja saatavilla.</li>
+        {% endif %}
+    </ul>
+    
+
+    <a href="{{ url_for('web_dev_page') }}" style="padding: 10px 20px; background-color: rgb(255, 85, 85); color: white; text-decoration: none; border-radius: 5px;">Takaisin ravintoloihin</a>
+</body>
+</html>
