@@ -61,8 +61,6 @@ Luo schemat tietokantaan ensin ja sitten virtuaaliympäristö komennoilla:
 
 psql -d (oman_tietokannan_nimi) < schema.sql
 
-python3 -m venv venv
-
 Aktivoi virtuaaliympäristö
 
 source venv/bin/activate
