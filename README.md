@@ -6,8 +6,6 @@ Lopullisen sovelluksen toiminnot
  
 	- Käyttäjä voi kirjautua sisään ja ulos sekä luoda uuden tunnuksen.
  
-	- Käyttäjä näkee ravintolat kartalla ja voi painaa ravintolaa, jolloin siitä näytetään lisää tietoa (kuten kuvaus ja aukioloajat).
- 
 	- Käyttäjä voi antaa arvion (tähdet ja kommentti) ravintolasta ja lukea muiden antamia arvioita.
  
 	- Ylläpitäjä voi lisätä ja poistaa ravintoloita sekä määrittää ravintolasta näytettävät tiedot.
@@ -23,8 +21,6 @@ Lopullisen sovelluksen toiminnot
 tämän hetken toiminnot:
 	
 	- Käyttäjä voi kirjautua sisään ja ulos sekä luoda uuden tunnuksen.
- 
-	- Käyttäjä näkee ravintolat kartalla ja voi painaa ravintolaa, jolloin siitä näytetään lisää tietoa (kuten kuvaus ja aukioloajat).
  
 	- Käyttäjä voi antaa arvion (tähdet ja kommentti) ravintolasta ja lukea muiden antamia arvioita.
  
