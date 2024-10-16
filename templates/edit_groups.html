@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muokkaa Ryhmiä</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .remove-button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .add-button {
+            background-color: orange;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        .restaurant-list {
+            text-align: left;
+            margin: 0 auto;
+            display: inline-block;
+        }
+        .restaurant-item {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Muokkaa Ryhmiä</h1>
+    {% for group in group_data.values() %}
+        <h2 style="color: {{ COLOR_MAP[group.color_id] }}">{{ group.group_name }}</h2>
+        <ul class="restaurant-list" style="list-style: none; padding: 0;">
+            {% for restaurant in group.restaurants %}
+                <li class="restaurant-item">
+                    {{ restaurant.name }}
+                    <form action="{{ url_for('remove_restaurant_from_group', restaurant_id=restaurant.restaurant_id, group_id=group.group_id) }}" method="POST" style="display: inline;">
+                        <button type="submit" class="remove-button">x</button>
+                    </form>
+                </li>
+            {% endfor %}
+            {% if not group.restaurants %}
+                <li>Ei ravintoloita tässä ryhmässä.</li>
+            {% endif %}
+        </ul>
+    {% endfor %}
+    <form action="{{ url_for('add_restaurants_to_group') }}" method="GET">
+        <button type="submit" class="add-button">Lisää Ravintoloita Ryhmiin</button>
+    </form>
+    <a href="{{ url_for('web_dev_page') }}" style="margin-top: 10px; display: inline-block;">Takaisin Ravintola sivulle</a>
+</body>
+</html>

@@ -182,6 +182,110 @@ def web_dev_page():
     else:
         return "Ei tänne päin!" 
 
+@app.route("/edit_groups", methods=["GET"])
+def edit_groups():
+    sql_query = """SELECT g.group_id, g.group_name, g.color_id, r.restaurant_id, r.name
+        FROM groups g
+        LEFT JOIN group_restaurants gr ON g.group_id = gr.group_id
+        LEFT JOIN restaurants r ON gr.restaurant_id = r.restaurant_id
+        ORDER BY g.group_id"""
+    result = db.session.execute(text(sql_query))
+    groups = result.fetchall()
+
+    group_data = {}
+    for row in groups:
+        group_id = row.group_id
+        if group_id not in group_data:
+            group_data[group_id] = {
+                "group_id": group_id,
+                "group_name": row.group_name,
+                "color_id": row.color_id,
+                "restaurants": []
+            }
+        if row.restaurant_id:
+            group_data[group_id]["restaurants"].append({
+                "restaurant_id": row.restaurant_id,
+                "name": row.name
+            })
+
+    return render_template("edit_groups.html", group_data=group_data, COLOR_MAP=COLOR_MAP)
+
+@app.route("/create_group", methods=["GET", "POST"])
+def create_group():
+    if request.method == "POST":
+        group_name = request.form["group_name"]
+        color_id = request.form["color_id"]
+        selected_restaurants = request.form.getlist("restaurants")
+
+        if len(group_name) > 20:
+            flash("Group name must be under 20 characters.")
+            return redirect(url_for("create_group"))
+
+        sql_insert_group = "INSERT INTO groups (group_name, color_id) VALUES (:group_name, :color_id) RETURNING group_id"
+        result = db.session.execute(text(sql_insert_group), {"group_name": group_name, "color_id": color_id})
+        group_id = result.fetchone()[0]
+        
+        for restaurant_id in selected_restaurants:
+            db.session.execute(text("INSERT INTO group_restaurants (group_id, restaurant_id) VALUES (:group_id, :restaurant_id)"),
+                               {"group_id": group_id, "restaurant_id": restaurant_id})
+        
+        db.session.commit()
+        flash("Group created successfully!")
+        return redirect(url_for("edit_groups"))
+
+    colors = COLOR_MAP.items()
+    sql_query = "SELECT restaurant_id, name FROM restaurants"
+    result = db.session.execute(text(sql_query))
+    restaurants = result.fetchall()
+
+    return render_template("create_group.html", colors=colors, restaurants=restaurants)
+
+    colors = [(1, "Red"), (2, "Blue"), (3, "Green"), (4, "Purple"), (5, "Grey")]
+    sql_query = "SELECT restaurant_id, name FROM restaurants"
+    result = db.session.execute(text(sql_query))
+    restaurants = result.fetchall()
+
+    return render_template("create_group.html", colors=COLOR_MAP, restaurants=restaurants)
+
+@app.route("/add_restaurants_to_group", methods=["GET", "POST"])
+def add_restaurants_to_group():
+    if request.method == "POST":
+        group_id = request.form["group_id"]
+        selected_restaurants = request.form.getlist("restaurants")
+
+        for restaurant_id in selected_restaurants:
+            existing_entry = db.session.execute(
+                text("SELECT COUNT(*) FROM group_restaurants WHERE group_id = :group_id AND restaurant_id = :restaurant_id"),
+                {"group_id": group_id, "restaurant_id": restaurant_id}
+            ).scalar()
+
+            if existing_entry == 0:
+                db.session.execute(
+                    text("INSERT INTO group_restaurants (group_id, restaurant_id) VALUES (:group_id, :restaurant_id)"),
+                    {"group_id": group_id, "restaurant_id": restaurant_id}
+                )
+
+        db.session.commit()
+        flash("Ravintolat lisätty ryhmään!")
+        return redirect(url_for("edit_groups"))
+
+    sql_query_groups = "SELECT group_id, group_name FROM groups"
+    result_groups = db.session.execute(text(sql_query_groups))
+    groups = result_groups.fetchall()
+
+    sql_query_restaurants = "SELECT restaurant_id, name FROM restaurants"
+    result_restaurants = db.session.execute(text(sql_query_restaurants))
+    restaurants = result_restaurants.fetchall()
+
+    return render_template("add_restaurants_to_group.html", groups=groups, restaurants=restaurants)
+
+@app.route("/remove_restaurant_from_group/<int:restaurant_id>/<int:group_id>", methods=["POST"])
+def remove_restaurant_from_group(restaurant_id, group_id):
+    db.session.execute(text("DELETE FROM group_restaurants WHERE restaurant_id = :restaurant_id AND group_id = :group_id"),
+                       {"restaurant_id": restaurant_id, "group_id": group_id})
+    db.session.commit()
+    return redirect(url_for("edit_groups"))
+
 @app.route("/web_dev_edit_ravintola/<int:restaurant_id>", methods=["GET", "POST"])
 def web_dev_edit_ravintola(restaurant_id):
     if request.method == "GET":

@@ -63,7 +63,7 @@
             margin: 10px 0;
         }
         .badge-placeholder {
-            height: 25px; /* Adjust height as necessary */
+            height: 25px;
         }
     </style>
 </head>
@@ -78,7 +78,8 @@
     </form>
     
     <a href="{{ url_for('web_dev_add_review') }}" style="background-color: orange; color: white;">Lisää Arvostelu (Ylläpitäjä)</a>
-    
+    <a href="{{ url_for('edit_groups') }}" style="background-color: lightblue; color: white;">Muokkaa Ryhmiä</a>
+
     <ul>
         {% if restaurants %}
             {% for restaurant in restaurants %}

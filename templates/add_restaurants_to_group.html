@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lisää Ravintoloita Ryhmään</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        .restaurant-list {
+            text-align: center;
+            margin: 20px auto;
+            display: inline-block;
+        }
+        .submit-button {
+            padding: 10px 15px;
+            border-radius: 5px;
+            background-color: green;
+            color: white;
+            margin-top: 30px;
+            cursor: pointer;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .back-button {
+            padding: 5px 10px;
+            border-radius: 5px;
+            background-color: red;
+            color: white;
+            margin-top: 10px;
+            display: inline-block;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Lisää Ravintoloita Ryhmään</h1>
+    <form method="POST">
+        <label for="group_id">Valitse Ryhmä:</label>
+        <select id="group_id" name="group_id" required>
+            {% for group in groups %}
+                <option value="{{ group.group_id }}">{{ group.group_name }}</option>
+            {% endfor %}
+        </select>
+        <label>Valitse Ravintolat:</label>
+        <div class="restaurant-list">
+            {% for restaurant in restaurants %}
+                <label>
+                    <input type="checkbox" name="restaurants" value="{{ restaurant.restaurant_id }}">
+                    {{ restaurant.name }}
+                </label><br>
+            {% endfor %}
+        </div>
+        <button type="submit" class="submit-button">Lisää Ravintolat</button>
+    </form>
+    <a href="{{ url_for('edit_groups') }}" class="back-button">Takaisin Ravintola sivulle</a>
+</body>
+</html>

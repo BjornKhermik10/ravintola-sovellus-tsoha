@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luo Uusi Ryhmä</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 20px;
+        }
+        .max-char {
+            font-size: 0.9em;
+            color: grey;
+            margin-bottom: 10px;
+        }
+        .submit-button, .back-button {
+            padding: 10px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin-top: 20px;
+            display: inline-block;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .submit-button {
+            background-color: green;
+            color: white;
+        }
+        .back-button {
+            background-color: red;
+            color: white;
+        }
+        input[type="text"], select {
+            width: 200px;
+            margin-top: 10px;
+            padding: 5px;
+            text-align: center;
+        }
+        .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .checkbox-label {
+            margin: 5px 0;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Luo Uusi Ryhmä</h1>
+    
+    <form method="POST">
+        <label for="group_name">Ryhmä Nimi:</label>
+        <p class="max-char">Maksimi merkkimäärä: 20</p>
+        <input type="text" id="group_name" name="group_name" required maxlength="20">
+        
+        <label for="color_id">Valitse Väri:</label>
+        <select id="color_id" name="color_id" required>
+            <option value="1" style="background-color: #FA6F6F;">Punainen</option>
+            <option value="2" style="background-color: #5CAEFA;">Sininen</option>
+            <option value="3" style="background-color: #006D05;">Vihreä</option>
+            <option value="4" style="background-color: #CA66F8;">Violetti</option>
+            <option value="5" style="background-color: #808080;">Harmaa</option>
+        </select>
+        
+        <label>Valitse Ravintolat:</label>
+        <div class="checkbox-group">
+            {% for restaurant in restaurants %}
+                <label class="checkbox-label">
+                    <input type="checkbox" name="restaurants" value="{{ restaurant.restaurant_id }}">
+                    {{ restaurant.name }}
+                </label>
+            {% endfor %}
+        </div>
+
+        <button type="submit" class="submit-button">Luo Ryhmä</button>
+        <a href="{{ url_for('web_dev_page') }}" class="back-button">Takaisin Ravintola sivulle</a>
+    </form>
+</body>
+</html>
