@@ -14,13 +14,29 @@
             margin: 0;
             font-family: Arial, sans-serif;
             text-align: center;
+            background-image: url('/static/images/foodphoto.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
         h1 {
             margin-bottom: 30px;
+            padding: 20px 40px;
+            background-color: sandybrown;
+            color: white;
+            border-radius: 25px;
+            font-size: 36px;
+        }
+        .form-container {
+            padding: 30px;
+            background-color: sandybrown;
+            border-radius: 25px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* Adds a slight shadow for better visual effect */
         }
         label {
             display: block;
             margin: 10px 0 5px;
+            font-weight: bold;
         }
         input[type="text"],
         input[type="password"] {
@@ -56,27 +72,29 @@
 </head>
 <body>
     <h1>Rekisteröidy</h1>
-    <form method="POST">
-        <label for="username">Käyttäjänimi:</label>
-        <input type="text" name="username" required>
-        
-        <label>Oletko Sivuston Ylläpitäjä:</label>
-        <div class="radio-group">
-            <label>
-                <input type="radio" name="admin" value="True" required> Kyllä
-            </label>
-            <label>
-                <input type="radio" name="admin" value="False" required> Ei
-            </label>
-        </div>
-        
-        <label for="salasana">Salasana:</label>
-        <input type="password" name="salasana" required>
-        
-        <div style="margin-top: 20px;">
-            <button type="submit" class="button">Rekisteröidy</button>
-            <a href="{{ url_for('index') }}" class="button">Takaisin etusivulle</a>
-        </div>        
-    </form>
+    <div class="form-container">
+        <form method="POST">
+            <label for="username">Käyttäjänimi:</label>
+            <input type="text" name="username" required>
+
+            <label>Oletko Sivuston Ylläpitäjä:</label>
+            <div class="radio-group">
+                <label>
+                    <input type="radio" name="admin" value="True" required> Kyllä
+                </label>
+                <label>
+                    <input type="radio" name="admin" value="False" required> Ei
+                </label>
+            </div>
+
+            <label for="salasana">Salasana:</label>
+            <input type="password" name="salasana" required>
+
+            <div style="margin-top: 20px;">
+                <button type="submit" class="button">Rekisteröidy</button>
+                <a href="{{ url_for('index') }}" class="button">Takaisin etusivulle</a>
+            </div>        
+        </form>
+    </div>
 </body>
 </html>

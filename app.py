@@ -240,13 +240,6 @@ def create_group():
 
     return render_template("create_group.html", colors=colors, restaurants=restaurants)
 
-    colors = [(1, "Red"), (2, "Blue"), (3, "Green"), (4, "Purple"), (5, "Grey")]
-    sql_query = "SELECT restaurant_id, name FROM restaurants"
-    result = db.session.execute(text(sql_query))
-    restaurants = result.fetchall()
-
-    return render_template("create_group.html", colors=COLOR_MAP, restaurants=restaurants)
-
 @app.route("/add_restaurants_to_group", methods=["GET", "POST"])
 def add_restaurants_to_group():
     if request.method == "POST":
@@ -353,7 +346,6 @@ def update_restaurant(restaurant_id):
 
 @app.route("/remove_restaurant/<int:restaurant_id>", methods=["POST"])
 def remove_restaurant(restaurant_id):
-    # testing
     db.session.execute(text("DELETE FROM review WHERE restaurant_id = :restaurant_id"), {"restaurant_id": restaurant_id})
     db.session.execute(text("DELETE FROM restaurants WHERE restaurant_id = :restaurant_id"), {"restaurant_id": restaurant_id})
     db.session.commit()
@@ -439,9 +431,11 @@ def submit_review():
         if account:
             account_id = account.account_id
             rating = request.form["rating"]
-            # jos ei halua jättää text commenttia niin "-" menee review sql tableen
             comment = request.form["comment"] or "-"
             restaurant_id = request.form["restaurant_id"]
+
+            if len(comment) > 52:
+                comment = comment[:52]
 
             sql_insert = """INSERT INTO review (account_id, restaurant_id, rating, comment) VALUES (:account_id, :restaurant_id, :rating, :comment)"""
             db.session.execute(text(sql_insert), {

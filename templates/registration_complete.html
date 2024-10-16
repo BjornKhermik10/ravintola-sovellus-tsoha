@@ -1,40 +1,70 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Käyttäjä Luotu</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-image: url('/static/images/foodphoto.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+            color: black;
+        }
+        .message-container {
+            padding: 30px;
+            background-color: sandybrown;
+            border-radius: 25px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            color: white;
+            max-width: 400px;
+            text-align: center;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 36px;
+        }
+        p {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: black;
+        }
+        .button {
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #5e5e5e;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .button:hover {
+            background-color: #000000;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="successModalLabel">Käyttäjä Luotu!</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Nyt voit kirjautua näillä tunnuksilla.
-                </div>
-                <div class="modal-footer">
-                    <a href="{{ url_for('login') }}" class="btn btn-primary">Kirjautumissivulle</a>
-                </div>
-            </div>
-        </div>
+    <div class="message-container">
+        <h1>Käyttäjä Luotu!</h1>
+        <p style="color: black;">Nyt voit kirjautua näillä tunnuksilla.</p>
+        <a href="{{ url_for('login') }}" class="button">Kirjautumissivulle</a>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <script>
-        $(document).ready(function(){
-            $('#successModal').modal('show');
-        });
-    </script>
 </body>
 </html>

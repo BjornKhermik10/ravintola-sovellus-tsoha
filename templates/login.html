@@ -14,13 +14,28 @@
             margin: 0;
             font-family: Arial, sans-serif;
             text-align: center;
+            background-image: url('/static/images/foodphoto.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        .form-container {
+            padding: 30px;
+            background-color: sandybrown;
+            border-radius: 25px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            color: white;
+            max-width: 400px;
+            text-align: center;
         }
         h1 {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            font-size: 36px;
         }
         label {
             display: block;
             margin: 10px 0 5px;
+            color: black;
         }
         input[type="text"],
         input[type="password"] {
@@ -43,21 +58,28 @@
             text-decoration: none;
             display: inline-block;
         }
+        .button:hover {
+            background-color: #000000;
+        }
     </style>
 </head>
 <body>
-    <h1>Kirjaudu sisään</h1>
-    <form method="POST">
-        <label for="username">Käyttäjänimi:</label>
-        <input type="text" name="username" required>
-        
-        <label for="password">Salasana:</label>
-        <input type="password" name="password" required>
-        
-        <div style="margin-top: 20px;">
-            <button type="submit" class="button">Kirjaudu</button>
-            <a href="{{ url_for('index') }}" class="button">Takaisin etusivulle</a>
-        </div>  
-    </form>
+
+    <div class="form-container">
+        <h1>Kirjaudu sisään</h1>
+        <form method="POST">
+            <label for="username">Käyttäjänimi:</label>
+            <input type="text" name="username" required>
+            
+            <label for="password">Salasana:</label>
+            <input type="password" name="password" required>
+            
+            <div style="margin-top: 20px;">
+                <button type="submit" class="button">Kirjaudu</button>
+                <a href="{{ url_for('index') }}" class="button">Takaisin etusivulle</a>
+            </div>  
+        </form>
+    </div>
+
 </body>
 </html>

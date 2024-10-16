@@ -5,11 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arvostelut - {{ restaurant.name }} (Ylläpitäjä)</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url('/static/images/foodphoto.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: black;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            height: 100vh;
+        }
+        h1 {
+            color: white;
+            background-color: sandybrown;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            width: fit-content;
+            margin: 40px 0 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            width: 100%;
+            max-width: 600px;
+        }
+        li {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
         .star {
             color: gold;
         }
         .empty-star {
             color: lightgray;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: rgb(255, 85, 85);
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .remove-button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
         }
     </style>
 </head>
@@ -33,7 +88,7 @@
                     - {{ review.comment }}
                     <form action="{{ url_for('remove_review', review_id=review.review_id) }}" method="POST" style="display: inline;">
                         <input type="hidden" name="restaurant_id" value="{{ restaurant_id }}">
-                        <button type="submit" style="background-color: red; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">Poista</button>
+                        <button type="submit" class="remove-button">Poista</button>
                     </form>
                 </li>
             {% endfor %}
@@ -41,8 +96,7 @@
             <li>Ei arvosteluja saatavilla.</li>
         {% endif %}
     </ul>
-    
 
-    <a href="{{ url_for('web_dev_page') }}" style="padding: 10px 20px; background-color: rgb(255, 85, 85); color: white; text-decoration: none; border-radius: 5px;">Takaisin ravintoloihin</a>
+    <a href="{{ url_for('web_dev_page') }}" class="button">Takaisin ravintoloihin</a>
 </body>
 </html>

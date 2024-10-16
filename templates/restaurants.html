@@ -7,12 +7,29 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-image: url('/static/images/foodphoto.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: black;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        h1 {
-            margin-bottom: 20px;
+        h1, h2 {
+            margin: 10px 0;
+            color: white;
+            background-color: sandybrown;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            width: fit-content;
         }
         form {
             margin-bottom: 20px;
+            text-align: center;
         }
         input[type="text"] {
             padding: 10px;
@@ -33,9 +50,23 @@
             display: inline-block;
         }
         .add-review-button {
-            background-color: orange;
+            background-color: sandybrown;
             color: white;
             margin-bottom: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            width: 100%;
+            max-width: 600px;
+        }
+        li {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: left;
         }
         .badge {
             display: inline-block;
@@ -50,7 +81,13 @@
             margin: 10px 0;
         }
         .badge-placeholder {
-            height: 25px; /* Adjust height as necessary */
+            height: 25px;
+        }
+        .description, .opening-hours, .rating {
+            margin-top: 10px;
+        }
+        .rating {
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -70,7 +107,7 @@
         {% if restaurants %}
             {% for restaurant in restaurants %}
                 <li>
-                    <strong>{{ restaurant.name }}</strong> 
+                    <strong style="color: black;">{{ restaurant.name }}</strong>
                     <div>
                         {% if restaurant.groups %}
                             {% for group in restaurant.groups %}
@@ -80,11 +117,10 @@
                             <span class="badge-placeholder"></span>
                         {% endif %}
                     </div>
-                    <br>
-                    Kuvaus: {{ restaurant.description }}<br>
-                    Aukioloajat: {{ restaurant.opening_hours }}<br>
-                    ⭐ {{ '%.1f' | format(restaurant.average_rating) }}:<br>
-                    <a href="{{ url_for('reviews', restaurant_id=restaurant.restaurant_id) }}" style="color: blue; text-decoration: underline;">Lue arvosteluita</a>
+                    <div class="description">Kuvaus: {{ restaurant.description }}</div>
+                    <div class="opening-hours">Aukioloajat: {{ restaurant.opening_hours }}</div>
+                    <div class="rating">⭐ {{ '%.1f' | format(restaurant.average_rating) }}:</div>
+                    <a href="{{ url_for('reviews', restaurant_id=restaurant.restaurant_id) }}" style="color: blue; text-decoration: underline; margin-top: 10px;">Lue arvosteluita</a>
                 </li>
                 <hr>
             {% endfor %}

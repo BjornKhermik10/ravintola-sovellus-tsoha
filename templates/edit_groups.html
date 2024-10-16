@@ -7,10 +7,34 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            text-align: center;
+            background-image: url('/static/images/foodphoto.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: black;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         h1 {
-            margin-bottom: 20px;
+            margin: 10px 0;
+            color: white;
+            background-color: sandybrown;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            width: fit-content;
+        }
+        h2 {
+            background-color: lightgray;
+            color: black;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 5px 0;
+            width: fit-content;
         }
         .remove-button {
             background-color: red;
@@ -19,28 +43,52 @@
             padding: 5px 10px;
             border-radius: 5px;
             cursor: pointer;
+            margin-left: 10px;
         }
         .add-button {
-            background-color: orange;
+            background-color: sandybrown;
             color: white;
             border: none;
-            padding: 5px 10px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .back-button {
+            background-color: rgb(255, 85, 85);
+            color: white;
+            padding: 10px 15px;
+            border: none;
             border-radius: 5px;
             cursor: pointer;
             margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
         }
         .restaurant-list {
             text-align: left;
             margin: 0 auto;
             display: inline-block;
+            width: 100%;
+            max-width: 600px;
         }
         .restaurant-item {
-            margin-bottom: 5px;
+            margin-bottom: 10px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
     </style>
 </head>
 <body>
     <h1>Muokkaa Ryhmiä</h1>
+    <form action="{{ url_for('add_restaurants_to_group') }}" method="GET" style="margin-top: 20px;">
+        <button type="submit" class="add-button">Lisää Ravintoloita Ryhmiin</button>
+    </form>
     {% for group in group_data.values() %}
         <h2 style="color: {{ COLOR_MAP[group.color_id] }}">{{ group.group_name }}</h2>
         <ul class="restaurant-list" style="list-style: none; padding: 0;">
@@ -53,13 +101,10 @@
                 </li>
             {% endfor %}
             {% if not group.restaurants %}
-                <li>Ei ravintoloita tässä ryhmässä.</li>
+                <li class="restaurant-item">Ei ravintoloita tässä ryhmässä.</li>
             {% endif %}
         </ul>
     {% endfor %}
-    <form action="{{ url_for('add_restaurants_to_group') }}" method="GET">
-        <button type="submit" class="add-button">Lisää Ravintoloita Ryhmiin</button>
-    </form>
-    <a href="{{ url_for('web_dev_page') }}" style="margin-top: 10px; display: inline-block;">Takaisin Ravintola sivulle</a>
+    <a href="{{ url_for('web_dev_page') }}" class="back-button">Takaisin Ravintola sivulle</a>
 </body>
 </html>

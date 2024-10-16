@@ -7,12 +7,29 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-image: url('/static/images/foodphoto.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            color: black;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        h1 {
-            margin-bottom: 20px;
+        h1, h2 {
+            margin: 10px 0;
+            color: white;
+            background-color: sandybrown;
+            padding: 10px;
+            border-radius: 10px;
+            text-align: center;
+            width: fit-content;
         }
         form {
             margin-bottom: 20px;
+            text-align: center;
         }
         input[type="text"] {
             padding: 10px;
@@ -32,14 +49,10 @@
             text-decoration: none;
             display: inline-block;
         }
-        .remove-button {
-            background-color: red;
+        .add-review-button {
+            background-color: sandybrown;
             color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-left: 10px;
+            margin-bottom: 20px;
         }
         .edit-button {
             background-color: gray;
@@ -49,6 +62,29 @@
             border-radius: 5px;
             cursor: pointer;
             margin-left: 10px;
+        }
+        .remove-button {
+            background-color: red;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+            width: 100%;
+            max-width: 600px;
+        }
+        li {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: left;
         }
         .badge {
             display: inline-block;
@@ -77,7 +113,7 @@
         <a href="{{ url_for('web_dev_page') }}">Kaikki ravintolat</a>
     </form>
     
-    <a href="{{ url_for('web_dev_add_review') }}" style="background-color: orange; color: white;">Lisää Arvostelu (Ylläpitäjä)</a>
+    <a href="{{ url_for('web_dev_add_review') }}" class="add-review-button">Lisää Arvostelu (Ylläpitäjä)</a>
     <a href="{{ url_for('edit_groups') }}" style="background-color: lightblue; color: white;">Muokkaa Ryhmiä</a>
 
     <ul>
