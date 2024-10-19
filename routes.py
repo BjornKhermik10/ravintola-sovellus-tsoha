@@ -1,114 +1,26 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from sqlalchemy.sql import text
-from flask import render_template, request, redirect, url_for, session
-from os import getenv
-from werkzeug.security import check_password_hash, generate_password_hash
-from flask import Flask, flash
-import secrets
 from config import Config
+from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
-app.secret_key = getenv("SECRET_KEY")
+main_bp = Blueprint('main', __name__)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
-db = SQLAlchemy(app)
-app.config['DEBUG'] = True
+db = SQLAlchemy()
 
 COLOR_MAP = {
-    1: "#FA6F6F",  # Red
-    2: "#5CAEFA",  # Blue
-    3: "#006D05",  # Green
-    4: "#CA66F8",  # Purple
-    5: "#808080",  # Grey
-}
+        1: "#FA6F6F",  # Red
+        2: "#5CAEFA",  # Blue
+        3: "#006D05",  # Green
+        4: "#CA66F8",  # Purple
+        5: "#808080",  # Grey
+    }
 
-def generate_csrf_token():
-    if "csrf_token" not in session:
-        session["csrf_token"] = secrets.token_hex(16)
-    return session["csrf_token"]
-
-def validate_csrf_token(token):
-    return token == session.get("csrf_token")
-
-@app.route("/")
+@main_bp.route("/")
 def index():
     return render_template("index.html", csrf_token=generate_csrf_token())
 
-@app.route("/register", methods=["GET", "POST"])
-def register():
-    if request.method == "POST":
 
-        token = request.form.get("csrf_token")
-        if not validate_csrf_token(token):
-            return "Invalid CSRF token", 403
-        
-        name = request.form["username"]
-        admin = request.form["admin"]
-        password = request.form["salasana"]
-        hash_value = generate_password_hash(password)
-
-        sql_check = "SELECT 1 FROM accounts WHERE username=:username"
-        result = db.session.execute(text(sql_check), {"username": name})
-        existing_user = result.fetchone()
-        
-        if existing_user:
-            return "Käyttäjänimi on jo käytössä"
-        else:
-            sql_insert = "INSERT INTO accounts (username, password, admin) VALUES (:username, :password, :admin)"
-            db.session.execute(text(sql_insert), {"username": name, "password": hash_value, "admin": admin})
-            db.session.commit()
-
-            flash("Käyttäjä luotu!")
-            return redirect(url_for("registration_complete"))
-
-    return render_template("register.html", csrf_token=generate_csrf_token())
-
-@app.route("/registration_complete")
-def registration_complete():
-    return render_template("registration_complete.html", csrf_token=generate_csrf_token())
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-
-        token = request.form.get("csrf_token")
-        if not validate_csrf_token(token):
-            return "Invalid CSRF token", 403
-
-        username = request.form["username"]
-        password = request.form["password"]
-
-        sql_accounts_id = text("SELECT accounts.account_id, password FROM accounts WHERE username=:username")
-        result = db.session.execute(sql_accounts_id, {"username":username})
-        user = result.fetchone()    
-        if not user:
-            "Invalid username"
-        else:
-            hash_value = user.password
-            
-            if check_password_hash(hash_value, password):
-                session['username'] = username
-                
-                if is_admin():
-                    return redirect(url_for("web_dev_page"))
-                else:
-                    return redirect(url_for("restaurants"))
-            else:
-                "Invalid password"
-            
-    
-    return render_template("login.html", csrf_token=generate_csrf_token())
-
-def is_admin():
-    username = session.get('username')
-    
-    sql_admin = "SELECT admin FROM accounts WHERE username=:username"
-    result = db.session.execute(text(sql_admin), {"username": username})
-    user_admin = result.fetchone()
-    return user_admin is not None and user_admin[0] is True
-
-@app.route("/restaurants", methods=["GET"])
+@main_bp.route("/restaurants", methods=["GET"])
 def restaurants():
     search_sql_query = request.args.get("search", "")
     sql_query = """
@@ -152,7 +64,7 @@ def restaurants():
 
     return render_template("restaurants.html", restaurants=restaurant_list, COLOR_MAP=COLOR_MAP, csrf_token=generate_csrf_token())
 
-@app.route("/web_dev_page", methods=["GET"])
+@main_bp.route("/web_dev_page", methods=["GET"])
 def web_dev_page():
     if is_admin():
         search_sql_query = request.args.get("search", "")
@@ -199,7 +111,7 @@ def web_dev_page():
     else:
         return "Ei tänne päin!" 
 
-@app.route("/edit_groups", methods=["GET"])
+@main_bp.route("/edit_groups", methods=["GET"])
 def edit_groups():
     sql_query = """SELECT g.group_id, g.group_name, g.color_id, r.restaurant_id, r.name
         FROM groups g
@@ -227,7 +139,7 @@ def edit_groups():
 
     return render_template("edit_groups.html", group_data=group_data, COLOR_MAP=COLOR_MAP, csrf_token=generate_csrf_token())
 
-@app.route("/create_group", methods=["GET", "POST"])
+@main_bp.route("/create_group", methods=["GET", "POST"])
 def create_group():
     if request.method == "POST":
 
@@ -262,7 +174,7 @@ def create_group():
 
     return render_template("create_group.html", colors=colors, restaurants=restaurants, csrf_token=generate_csrf_token())
 
-@app.route("/add_restaurants_to_group", methods=["GET", "POST"])
+@main_bp.route("/add_restaurants_to_group", methods=["GET", "POST"])
 def add_restaurants_to_group():
     if request.method == "POST":
         group_id = request.form["group_id"]
@@ -294,14 +206,14 @@ def add_restaurants_to_group():
 
     return render_template("add_restaurants_to_group.html", groups=groups, restaurants=restaurants)
 
-@app.route("/remove_restaurant_from_group/<int:restaurant_id>/<int:group_id>", methods=["POST"])
+@main_bp.route("/remove_restaurant_from_group/<int:restaurant_id>/<int:group_id>", methods=["POST"])
 def remove_restaurant_from_group(restaurant_id, group_id):
     db.session.execute(text("DELETE FROM group_restaurants WHERE restaurant_id = :restaurant_id AND group_id = :group_id"),
                        {"restaurant_id": restaurant_id, "group_id": group_id})
     db.session.commit()
     return redirect(url_for("edit_groups"))
 
-@app.route("/web_dev_edit_ravintola/<int:restaurant_id>", methods=["GET", "POST"])
+@main_bp.route("/web_dev_edit_ravintola/<int:restaurant_id>", methods=["GET", "POST"])
 def web_dev_edit_ravintola(restaurant_id):
     if request.method == "GET":
         sql_query = "SELECT * FROM restaurants WHERE restaurant_id = :restaurant_id"
@@ -349,7 +261,7 @@ def web_dev_edit_ravintola(restaurant_id):
         db.session.commit()
         return redirect(url_for("web_dev_page"))
     
-@app.route("/update_restaurant/<int:restaurant_id>", methods=["POST"])
+@main_bp.route("/update_restaurant/<int:restaurant_id>", methods=["POST"])
 def update_restaurant(restaurant_id):
     description = request.form["description"]
     opening_hours = request.form["opening_hours"]
@@ -366,7 +278,7 @@ def update_restaurant(restaurant_id):
 
     return redirect(url_for("web_dev_page"))
 
-@app.route("/remove_restaurant/<int:restaurant_id>", methods=["POST"])
+@main_bp.route("/remove_restaurant/<int:restaurant_id>", methods=["POST"])
 def remove_restaurant(restaurant_id):
     db.session.execute(text("DELETE FROM review WHERE restaurant_id = :restaurant_id"), {"restaurant_id": restaurant_id})
     db.session.execute(text("DELETE FROM restaurants WHERE restaurant_id = :restaurant_id"), {"restaurant_id": restaurant_id})
@@ -374,7 +286,7 @@ def remove_restaurant(restaurant_id):
     
     return redirect(url_for("web_dev_page"))
 
-@app.route("/web_dev_add_review")
+@main_bp.route("/web_dev_add_review")
 def web_dev_add_review():
     sql_query = "SELECT restaurant_id, name FROM restaurants"
     result = db.session.execute(text(sql_query))
@@ -382,7 +294,7 @@ def web_dev_add_review():
     
     return render_template("web_dev_add_review.html", restaurants=restaurants)
 
-@app.route("/remove_review/<int:review_id>", methods=["POST"])
+@main_bp.route("/remove_review/<int:review_id>", methods=["POST"])
 def remove_review(review_id):
     if not is_admin():
         return "Unauthorized", 403
@@ -393,7 +305,7 @@ def remove_review(review_id):
 
     return redirect(url_for("web_dev_review", restaurant_id=restaurant_id))
 
-@app.route("/submit_web_dev_review", methods=["POST"])
+@main_bp.route("/submit_web_dev_review", methods=["POST"])
 def submit_web_dev_review():
     if "username" in session:
         username = session["username"]
@@ -419,7 +331,7 @@ def submit_web_dev_review():
             db.session.commit()
             return redirect(url_for("web_dev_review", restaurant_id=restaurant_id))
 
-@app.route("/web_dev_review/<int:restaurant_id>")
+@main_bp.route("/web_dev_review/<int:restaurant_id>")
 def web_dev_review(restaurant_id):
     sql_query = """SELECT r.review_id, r.rating, r.comment, a.username 
                    FROM review r JOIN accounts a ON r.account_id = a.account_id 
@@ -433,7 +345,7 @@ def web_dev_review(restaurant_id):
 
     return render_template("web_dev_review.html", reviews=reviews, restaurant=restaurant, restaurant_id=restaurant_id)
 
-@app.route("/add_review")
+@main_bp.route("/add_review")
 def add_review():
     sql_query = "SELECT restaurant_id, name FROM restaurants"
     result = db.session.execute(text(sql_query))
@@ -441,7 +353,7 @@ def add_review():
     
     return render_template("add_review.html", restaurants=restaurants)
 
-@app.route("/submit_review", methods=["POST"])
+@main_bp.route("/submit_review", methods=["POST"])
 def submit_review():
     if "username" in session:
         username = session["username"]
@@ -469,7 +381,7 @@ def submit_review():
             db.session.commit()
             return redirect(url_for("restaurants"))
 
-@app.route("/reviews/<int:restaurant_id>")
+@main_bp.route("/reviews/<int:restaurant_id>")
 def reviews(restaurant_id):
     sql_query = """SELECT r.rating, r.comment, a.username FROM review r JOIN accounts a ON r.account_id = a.account_id WHERE r.restaurant_id = :restaurant_id"""
     result = db.session.execute(text(sql_query), {"restaurant_id": restaurant_id})
