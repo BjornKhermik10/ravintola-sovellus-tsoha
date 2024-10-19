@@ -86,6 +86,7 @@
         <h1>Lisää Arvostelu</h1>
 
         <form action="{{ url_for('submit_review') }}" method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <label for="restaurant">Valitse ravintola:</label>
             <select id="restaurant" name="restaurant_id" required>
                 <option value="">Valitse ravintola</option>

@@ -87,6 +87,7 @@
                     </span>
                     - {{ review.comment }}
                     <form action="{{ url_for('remove_review', review_id=review.review_id) }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                         <input type="hidden" name="restaurant_id" value="{{ restaurant_id }}">
                         <button type="submit" class="remove-button">Poista</button>
                     </form>

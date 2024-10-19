@@ -137,6 +137,7 @@
                     <a href="{{ url_for('web_dev_review', restaurant_id=restaurant.restaurant_id) }}" style="color: blue; text-decoration: underline;">Lue arvosteluita</a>
                     <a href="{{ url_for('web_dev_edit_ravintola', restaurant_id=restaurant.restaurant_id) }}" class="edit-button">Muokkaa</a>
                     <form action="{{ url_for('remove_restaurant', restaurant_id=restaurant.restaurant_id) }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
                         <button type="submit" class="remove-button">Poista</button>
                     </form>
                 </li>

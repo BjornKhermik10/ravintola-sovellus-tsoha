@@ -81,6 +81,7 @@
     <div class="container">
         <h1>Lisää Ravintoloita Ryhmään</h1>
         <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
             <label for="group_id">Valitse Ryhmä:</label>
             <select id="group_id" name="group_id" required>
                 {% for group in groups %}

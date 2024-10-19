@@ -5,6 +5,7 @@ from flask import render_template, request, redirect, url_for, session
 from os import getenv
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import Flask, flash
+import secrets
 
 app = Flask(__name__)
 app.secret_key = getenv("SECRET_KEY")
@@ -21,13 +22,26 @@ COLOR_MAP = {
     5: "#808080",  # Grey
 }
 
+def generate_csrf_token():
+    if "csrf_token" not in session:
+        session["csrf_token"] = secrets.token_hex(16)
+    return session["csrf_token"]
+
+def validate_csrf_token(token):
+    return token == session.get("csrf_token")
+
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", csrf_token=generate_csrf_token())
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == 'POST':
+    if request.method == "POST":
+
+        token = request.form.get("csrf_token")
+        if not validate_csrf_token(token):
+            return "Invalid CSRF token", 403
+        
         name = request.form["username"]
         admin = request.form["admin"]
         password = request.form["salasana"]
@@ -47,15 +61,20 @@ def register():
             flash("Käyttäjä luotu!")
             return redirect(url_for("registration_complete"))
 
-    return render_template("register.html")
+    return render_template("register.html", csrf_token=generate_csrf_token())
 
 @app.route("/registration_complete")
 def registration_complete():
-    return render_template("registration_complete.html")
+    return render_template("registration_complete.html", csrf_token=generate_csrf_token())
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
+
+        token = request.form.get("csrf_token")
+        if not validate_csrf_token(token):
+            return "Invalid CSRF token", 403
+
         username = request.form["username"]
         password = request.form["password"]
 
@@ -78,7 +97,7 @@ def login():
                 "Invalid password"
             
     
-    return render_template("login.html")
+    return render_template("login.html", csrf_token=generate_csrf_token())
 
 def is_admin():
     username = session.get('username')
@@ -130,7 +149,7 @@ def restaurants():
     if current_restaurant:
         restaurant_list.append(current_restaurant)
 
-    return render_template("restaurants.html", restaurants=restaurant_list, COLOR_MAP=COLOR_MAP)
+    return render_template("restaurants.html", restaurants=restaurant_list, COLOR_MAP=COLOR_MAP, csrf_token=generate_csrf_token())
 
 @app.route("/web_dev_page", methods=["GET"])
 def web_dev_page():
@@ -175,7 +194,7 @@ def web_dev_page():
         if current_restaurant:
             restaurant_list.append(current_restaurant)
 
-        return render_template("web_dev_page.html", restaurants=restaurant_list, COLOR_MAP=COLOR_MAP)
+        return render_template("web_dev_page.html", restaurants=restaurant_list, COLOR_MAP=COLOR_MAP, csrf_token=generate_csrf_token())
     else:
         return "Ei tänne päin!" 
 
@@ -205,11 +224,16 @@ def edit_groups():
                 "name": row.name
             })
 
-    return render_template("edit_groups.html", group_data=group_data, COLOR_MAP=COLOR_MAP)
+    return render_template("edit_groups.html", group_data=group_data, COLOR_MAP=COLOR_MAP, csrf_token=generate_csrf_token())
 
 @app.route("/create_group", methods=["GET", "POST"])
 def create_group():
     if request.method == "POST":
+
+        token = request.form.get("csrf_token")
+        if not validate_csrf_token(token):
+            return "Invalid CSRF token", 403
+
         group_name = request.form["group_name"]
         color_id = request.form["color_id"]
         selected_restaurants = request.form.getlist("restaurants")
@@ -235,7 +259,7 @@ def create_group():
     result = db.session.execute(text(sql_query))
     restaurants = result.fetchall()
 
-    return render_template("create_group.html", colors=colors, restaurants=restaurants)
+    return render_template("create_group.html", colors=colors, restaurants=restaurants, csrf_token=generate_csrf_token())
 
 @app.route("/add_restaurants_to_group", methods=["GET", "POST"])
 def add_restaurants_to_group():

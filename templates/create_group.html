@@ -60,6 +60,7 @@
     <h1>Luo Uusi Ryhmä</h1>
     
     <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <label for="group_name">Ryhmä Nimi:</label>
         <p class="max-char">Maksimi merkkimäärä: 20</p>
         <input type="text" id="group_name" name="group_name" required maxlength="20">
