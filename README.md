@@ -2,7 +2,7 @@ READ ME
 
 Sovellukseksi valitsin esimerkki-aiheista Ravintolasovelluksen:
 
-Lopullisen sovelluksen toiminnot
+Sovelluksen toiminnot
  
 	- Käyttäjä voi kirjautua sisään ja ulos sekä luoda uuden tunnuksen.
  
@@ -17,21 +17,6 @@ Lopullisen sovelluksen toiminnot
 	- Ylläpitäjä voi tarvittaessa poistaa käyttäjän antaman arvion.
  
 	- Ylläpitäjä voi luoda ryhmiä, joihin ravintoloita voi luokitella. Ravintola voi kuulua yhteen tai useampaan ryhmään.
-
-tämän hetken toiminnot:
-	
-	- Käyttäjä voi kirjautua sisään ja ulos sekä luoda uuden tunnuksen.
- 
-	- Käyttäjä voi antaa arvion (tähdet ja kommentti) ravintolasta ja lukea muiden antamia arvioita.
- 
-	- Ylläpitäjä voi lisätä ja poistaa ravintoloita sekä määrittää ravintolasta näytettävät tiedot.
- 
-	- Käyttäjä voi etsiä kaikki ravintolat, joiden kuvauksessa on tietty sana.
- 
-	- Käyttäjä näkee myös listan, jossa ravintolat on järjestetty parhaimmasta huonoimpaan arvioiden mukaisesti.
- 
-	- Ylläpitäjä voi tarvittaessa poistaa käyttäjän antaman arvion.
-
 
 ------------------------------------------------------------------------------------------
 Asennus ja käynnistysohje:
