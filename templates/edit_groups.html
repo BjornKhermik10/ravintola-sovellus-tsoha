@@ -90,21 +90,21 @@
         <button type="submit" class="add-button">Lisää Ravintoloita Ryhmiin</button>
     </form>
     {% for group in group_data.values() %}
-        <h2 style="color: {{ COLOR_MAP[group.color_id] }}">{{ group.group_name }}</h2>
-        <ul class="restaurant-list" style="list-style: none; padding: 0;">
-            {% for restaurant in group.restaurants %}
-                <li class="restaurant-item">
-                    {{ restaurant.name }}
-                    <form action="{{ url_for('remove_restaurant_from_group', restaurant_id=restaurant.restaurant_id, group_id=group.group_id) }}" method="POST" style="display: inline;">
-                        <button type="submit" class="remove-button">x</button>
-                    </form>
-                </li>
-            {% endfor %}
-            {% if not group.restaurants %}
-                <li class="restaurant-item">Ei ravintoloita tässä ryhmässä.</li>
-            {% endif %}
-        </ul>
-    {% endfor %}
+    <h2 style="color: {{ COLOR_MAP[group.color_id] }}">{{ group.group_name }}</h2>
+    <ul class="restaurant-list" style="list-style: none; padding: 0;">
+        {% for restaurant in group.restaurants %}
+            <li class="restaurant-item">
+                {{ restaurant.name }}
+                <form action="{{ url_for('remove_restaurant_from_group', restaurant_id=restaurant.restaurant_id, group_id=group.group_id) }}" method="POST" style="display: inline;">
+                    <button type="submit" class="remove-button">x</button>
+                </form>
+            </li>
+        {% endfor %}
+        {% if not group.restaurants %}
+            <li class="restaurant-item">Ei ravintoloita tässä ryhmässä.</li>
+        {% endif %}
+    </ul>
+{% endfor %}
     <a href="{{ url_for('web_dev_page') }}" class="back-button">Takaisin Ravintola sivulle</a>
 </body>
 </html>

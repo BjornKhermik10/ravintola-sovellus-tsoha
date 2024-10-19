@@ -6,10 +6,8 @@ from os import getenv
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask import Flask, flash
 
-
 app = Flask(__name__)
 app.secret_key = getenv("SECRET_KEY")
-
 
 app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 db = SQLAlchemy(app)
@@ -109,7 +107,6 @@ def restaurants():
     result = db.session.execute(text(sql_query), {"search_sql_query": f"%{search_sql_query}%"})
     restaurants = result.fetchall()
 
-    #testing please work - tämä on groups badgejen toimivuutta varten
     restaurant_list = []
     current_restaurant = None
     for row in restaurants:
@@ -449,7 +446,6 @@ def submit_review():
 
 @app.route("/reviews/<int:restaurant_id>")
 def reviews(restaurant_id):
-    #testing
     sql_query = """SELECT r.rating, r.comment, a.username FROM review r JOIN accounts a ON r.account_id = a.account_id WHERE r.restaurant_id = :restaurant_id"""
     result = db.session.execute(text(sql_query), {"restaurant_id": restaurant_id})
     reviews = result.fetchall()
